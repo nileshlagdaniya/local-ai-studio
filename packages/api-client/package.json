@@ -1,0 +1,21 @@
+{
+  "name": "@local-ai-studio/api-client",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Generated API client and types for Local AI Studio",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "generate": "openapi-typescript-codegen --input ../../apps/api/openapi.json --output ./src --client axios",
+    "build": "tsc",
+    "clean": "rm -rf dist node_modules"
+  },
+  "dependencies": {
+    "axios": "^1.7.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "openapi-typescript-codegen": "^2.0.0"
+  }
+}

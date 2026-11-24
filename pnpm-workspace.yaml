@@ -1,0 +1,24 @@
+packages:
+  - apps/web
+  - apps/api
+  - packages/*
+
+# Only link workspace packages that are explicitly listed
+# This prevents accidental linking of node_modules
+onlyBuiltDependencies: []
+
+# Hoist settings for better disk usage
+hoist:
+  # Hoist shared dependencies to root
+  pattern:
+    - "**"
+  # But don't hoist these (keep in workspace)
+  excluded:
+    - "@types/*"
+    - "eslint*"
+    - "prettier*"
+    - "typescript*"
+    - "vitest*"
+
+# Never install peer dependencies automatically
+autoInstallPeers: false
