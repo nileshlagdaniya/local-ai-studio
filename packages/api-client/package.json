@@ -16,6 +16,6 @@
   },
   "devDependencies": {
     "typescript": "^5.6.0",
-    "openapi-typescript-codegen": "^2.0.0"
+    "openapi-typescript-codegen": "^0.31.0"
   }
 }
