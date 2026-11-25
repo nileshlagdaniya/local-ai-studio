@@ -1,5 +1,26 @@
 """Database package."""
 from src.core.database.session import init_db, close_db, get_session
 from src.core.database.base import Base
+from src.core.database.models.infrastructure import (
+    JobStatus,
+    JobPriority,
+    AppSettings,
+    AIProvider,
+    AIProviderModel,
+    AutomationJob,
+    ActivityLog,
+)
 
-__all__ = ["init_db", "close_db", "get_session", "Base"]
+__all__ = [
+    "init_db",
+    "close_db",
+    "get_session",
+    "Base",
+    "JobStatus",
+    "JobPriority",
+    "AppSettings",
+    "AIProvider",
+    "AIProviderModel",
+    "AutomationJob",
+    "ActivityLog",
+]
