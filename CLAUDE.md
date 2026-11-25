@@ -9,7 +9,7 @@ Local-first, modular AI automation platform running on 8 GB RAM laptops. Support
 ```
 local-ai-studio/
 ├── apps/
-│   ├── web/          # Next.js 15 frontend (React 19, Tailwind v4)
+│   ├── web/          # Next.js 16 frontend (React 19, Tailwind v4)
 │   └── api/          # FastAPI backend (Python 3.12, SQLAlchemy 2.x)
 ├── packages/
 │   └── api-client/   # Generated TypeScript API client
@@ -26,7 +26,7 @@ local-ai-studio/
 
 | Layer | Stack |
 |-------|-------|
-| Frontend | Next.js 15, React 19, TypeScript 5.x, Tailwind CSS v4, shadcn/ui, TanStack Query 5, Zustand, React Hook Form, Zod |
+| Frontend | Next.js 16, React 19, TypeScript 5.x, Tailwind CSS v4, shadcn/ui, TanStack Query 5, Zustand, React Hook Form, Zod |
 | Backend | FastAPI, Pydantic v2, SQLAlchemy 2.x, Alembic, SQLite/PostgreSQL, HTTPX |
 | AI | Ollama (local), FreeLLMAPI (cloud fallback) |
 | Dev | pnpm 9, uv 0.4+, ESLint 9, Prettier 3, Ruff 0.7, Vitest 2, Pytest 8 |
