@@ -15,6 +15,13 @@
   --color-ring: var(--color-blue-500);
   --color-background: var(--color-white);
   --color-foreground: var(--color-slate-950);
+  --color-card: var(--color-white);
+  --color-card-foreground: var(--color-slate-950);
+  --color-popover: var(--color-white);
+  --color-popover-foreground: var(--color-slate-950);
+  --color-sidebar: var(--color-slate-50);
+  --color-sidebar-foreground: var(--color-slate-950);
+  --color-sidebar-border: var(--color-slate-200);
   --radius: 0.5rem;
 }
 
@@ -34,6 +41,13 @@
     --color-ring: var(--color-blue-400);
     --color-background: var(--color-slate-950);
     --color-foreground: var(--color-slate-50);
+    --color-card: var(--color-slate-900);
+    --color-card-foreground: var(--color-slate-50);
+    --color-popover: var(--color-slate-900);
+    --color-popover-foreground: var(--color-slate-50);
+    --color-sidebar: var(--color-slate-900);
+    --color-sidebar-foreground: var(--color-slate-50);
+    --color-sidebar-border: var(--color-slate-800);
   }
 }
 
@@ -45,4 +59,178 @@ body {
   background-color: var(--color-background);
   color: var(--color-foreground);
   font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Focus visible styles */
+:focus-visible {
+  outline: 2px solid var(--color-ring);
+  outline-offset: 2px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-muted-foreground);
+  border-radius: 4px;
+  opacity: 0.3;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  opacity: 0.5;
+}
+
+/* Selection */
+::selection {
+  background: var(--color-primary);
+  color: var(--color-primary-foreground);
+}
+
+/* Animations */
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slide-in-from-top {
+  from { transform: translateY(-10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-in-from-bottom {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes slide-in-from-left {
+  from { transform: translateX(-10px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slide-in-from-right {
+  from { transform: translateX(10px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes zoom-in {
+  from { transform: scale(0.95); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+.animate-fade-in {
+  animation: fade-in 200ms ease-out;
+}
+
+.animate-slide-in-from-top {
+  animation: slide-in-from-top 200ms ease-out;
+}
+
+.animate-slide-in-from-bottom {
+  animation: slide-in-from-bottom 200ms ease-out;
+}
+
+.animate-slide-in-from-left {
+  animation: slide-in-from-left 200ms ease-out;
+}
+
+.animate-slide-in-from-right {
+  animation: slide-in-from-right 200ms ease-out;
+}
+
+.animate-zoom-in {
+  animation: zoom-in 200ms ease-out;
+}
+
+/* Sticky table header */
+.sticky-header thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--color-background);
+}
+
+/* Sidebar styles */
+.sidebar-transition {
+  transition: width 200ms ease-in-out;
+}
+
+/* Card hover effects */
+.card-hover {
+  transition: box-shadow 200ms ease-in-out, border-color 200ms ease-in-out;
+}
+
+.card-hover:hover {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  border-color: var(--color-primary);
+}
+
+/* Layout shift prevention */
+.skeleton {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Ensure minimum heights for layout stability */
+.min-h-screen-stable {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+/* Prevent text selection on UI elements */
+.no-select {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Smooth transitions for interactive elements */
+.transition-smooth {
+  transition: all 150ms ease-in-out;
+}
+
+/* Loading states */
+.loading-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-muted) 25%,
+    var(--color-accent) 50%,
+    var(--color-muted) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
 }
