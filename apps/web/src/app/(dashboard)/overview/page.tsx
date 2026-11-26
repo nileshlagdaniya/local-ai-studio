@@ -1,491 +1,368 @@
 "use client";
 
 import * as React from "react";
-import { PageHeader } from "@/components/layout/PageHeader";
+import { PageHeader, SectionHeading } from "@/components/layout/PageHeader";
+import { StatCard, StatCardGrid } from "@/components/dashboard/StatCard";
 import { StatusBadge } from "@/components/dashboard/StatusBadge";
-import { Skeletons } from "@/components/dashboard/LoadingSkeleton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  useHealth,
-  useReadiness,
-  useProviderStatus,
-  useModels,
-  useRecentJobs,
-  useRecentActivity,
-  useTestProvider,
-  ApiError,
-} from "@/lib/api/hooks";
 import { cn } from "@/lib/utils";
 import {
-  ActivityIcon,
-  ArrowRightIcon,
-  CheckIcon,
-  CpuIcon,
-  DatabaseIcon,
-  ExternalLinkIcon,
-  GlobeIcon,
-  ListTodoIcon,
-  RefreshCwIcon,
   SparklesIcon,
-  XIcon,
+  CpuIcon,
+  FactoryIcon,
+  YoutubeIcon,
+  Share2Icon,
+  ZapIcon,
+  CodeIcon,
+  BookOpenIcon,
+  ListTodoIcon,
+  ActivityIcon,
+  SettingsIcon,
+  DatabaseIcon,
+  GlobeIcon,
+  CheckIcon,
+  ClockIcon,
+  FileTextIcon,
+  PlusIcon,
+  ArrowRightIcon,
+  RefreshCwIcon,
+  ExternalLinkIcon,
 } from "@/components/ui/icons";
-
-// ---------- Loading skeletons (dimension-matched to prevent layout shift) ----------
-
-function StatusCardSkeleton() {
-  return (
-    <Card className="min-h-[120px]">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <div className="h-4 w-24 animate-pulse rounded bg-muted" />
-        <div className="h-10 w-10 animate-pulse rounded-lg bg-muted" />
-      </CardHeader>
-      <CardContent>
-        <div className="h-8 w-20 animate-pulse rounded bg-muted" />
-        <div className="mt-2 h-3 w-32 animate-pulse rounded bg-muted" />
-      </CardContent>
-    </Card>
-  );
-}
-
-function ListCardSkeleton({ rows = 4 }: { rows?: number }) {
-  return (
-    <Card className="min-h-[280px]">
-      <CardHeader>
-        <div className="h-5 w-40 animate-pulse rounded bg-muted" />
-      </CardHeader>
-      <CardContent className="pt-0 space-y-3">
-        {Array.from({ length: rows }).map((_, i) => (
-          <div key={i} className="flex items-center gap-3 p-3 rounded-lg border">
-            <div className="h-2 w-2 flex-shrink-0 animate-pulse rounded-full bg-muted" />
-            <div className="flex-1 space-y-1.5">
-              <div className="h-4 w-2/3 animate-pulse rounded bg-muted" />
-              <div className="h-3 w-1/2 animate-pulse rounded bg-muted" />
-            </div>
-            <div className="h-3 w-16 animate-pulse rounded bg-muted" />
-          </div>
-        ))}
-      </CardContent>
-    </Card>
-  );
-}
-
-function ModelsCardSkeleton() {
-  return (
-    <Card className="min-h-[200px]">
-      <CardHeader>
-        <div className="h-5 w-40 animate-pulse rounded bg-muted" />
-      </CardHeader>
-      <CardContent className="pt-0 flex flex-wrap gap-2">
-        {Array.from({ length: 4 }).map((_, i) => (
-          <div key={i} className="h-7 w-40 animate-pulse rounded-full bg-muted" />
-        ))}
-      </CardContent>
-    </Card>
-  );
-}
-
-// ---------- Error state with retry ----------
-
-function ErrorPanel({
-  error,
-  onRetry,
-  label,
-}: {
-  error: unknown;
-  onRetry: () => void;
-  label: string;
-}) {
-  const message =
-    error instanceof ApiError
-      ? error.status === 0
-        ? "Cannot reach the backend. Is it running on the configured URL?"
-        : error.detail
-      : "An unexpected error occurred.";
-  return (
-    <div className="flex flex-col items-center justify-center gap-3 rounded-lg border border-destructive/30 bg-destructive/5 p-8 text-center" role="alert">
-      <XIcon className="h-8 w-8 text-destructive" aria-hidden="true" />
-      <div>
-        <p className="font-medium text-destructive">Failed to load {label}</p>
-        <p className="mt-1 max-w-md text-sm text-muted-foreground">{message}</p>
-      </div>
-      <Button variant="outline" size="sm" onClick={onRetry}>
-        <RefreshCwIcon className="h-4 w-4 mr-2" />
-        Retry
-      </Button>
-    </div>
-  );
-}
-
-// ---------- Connection status dot ----------
-
-function StatusDot({ state }: { state: "healthy" | "unhealthy" | "unknown" }) {
-  return (
-    <span
-      className={cn(
-        "inline-block h-2.5 w-2.5 flex-shrink-0 rounded-full",
-        state === "healthy" && "bg-green-500",
-        state === "unhealthy" && "bg-red-500",
-        state === "unknown" && "bg-muted-foreground"
-      )}
-      aria-label={state}
-    />
-  );
-}
-
-// ---------- Main page ----------
+import { createElement } from "react";
 
 export default function OverviewPage() {
-  const health = useHealth();
-  const readiness = useReadiness();
-  const providerStatus = useProviderStatus();
-  const models = useModels();
-  const jobs = useRecentJobs(5);
-  const activity = useRecentActivity(5);
-  const testProvider = useTestProvider();
-  const [testResult, setTestResult] = React.useState<string | null>(null);
+  const stats = [
+    {
+      title: "Total Automations",
+      value: "24",
+      description: "Active workflows",
+      trend: { value: 12, label: "vs last month" },
+      icon: <SparklesIcon className="h-5 w-5" />,
+      iconColor: "primary" as const,
+    },
+    {
+      title: "Jobs Completed",
+      value: "1,234",
+      description: "This month",
+      trend: { value: 8, label: "vs last month" },
+      icon: <CheckIcon className="h-5 w-5" />,
+      iconColor: "success" as const,
+    },
+    {
+      title: "AI Tokens Used",
+      value: "2.4M",
+      description: "Local inference",
+      trend: { value: -3, label: "vs last month" },
+      icon: <CpuIcon className="h-5 w-5" />,
+      iconColor: "warning" as const,
+    },
+    {
+      title: "Storage Used",
+      value: "847 MB",
+      description: "of 5 GB available",
+      trend: { value: 15, label: "this week" },
+      icon: <DatabaseIcon className="h-5 w-5" />,
+      iconColor: "muted" as const,
+    },
+  ];
 
-  const backendOnline = health.isSuccess && !health.isError;
+  const aiProviders = [
+    {
+      name: "Ollama (Local)",
+      status: "connected" as const,
+      model: "qwen2.5-coder:3b",
+      latency: "45ms",
+      type: "local",
+    },
+    {
+      name: "FreeLLMAPI (Cloud)",
+      status: "disconnected" as const,
+      model: "gpt-4o-mini",
+      latency: "—",
+      type: "cloud",
+    },
+  ];
 
-  const handleTestProvider = (provider: string) => {
-    setTestResult(`Testing ${provider}...`);
-    testProvider.mutate(
-      { provider },
-      {
-        onSuccess: (res) => {
-          setTestResult(
-            res.success
-              ? `${provider}: connected (${res.latency_ms}ms via ${res.model_tested})`
-              : `${provider}: failed — ${res.error}`
-          );
-        },
-        onError: (err) => {
-          setTestResult(
-            `${provider}: failed — ${err instanceof ApiError ? err.detail : "unknown error"}`
-          );
-        },
-      }
-    );
-  };
+  const recentActivity = [
+    { id: 1, action: "Job completed", detail: "Stock content generation - 5 articles", time: "2 min ago", type: "success" },
+    { id: 2, action: "Model pulled", detail: "qwen2.5-coder:3b updated to latest", time: "15 min ago", type: "info" },
+    { id: 3, action: "Storage cleanup", detail: "Removed 234 MB of temporary files", time: "1 hour ago", type: "warning" },
+    { id: 4, action: "New automation", detail: "Created 'Weekly Blog Posts' workflow", time: "3 hours ago", type: "success" },
+    { id: 5, action: "Settings updated", detail: "AI provider priority changed", time: "Yesterday", type: "info" },
+  ];
 
-  const healthState: "healthy" | "unhealthy" | "unknown" = health.isPending
-    ? "unknown"
-    : health.isError
-      ? "unhealthy"
-      : health.data?.status === "healthy"
-        ? "healthy"
-        : "unhealthy";
+  const recentJobs = [
+    { id: "job-001", name: "Stock Analysis - Q4 2024", module: "Stock Factory", status: "completed", progress: 100, started: "10:23 AM", duration: "2m 34s" },
+    { id: "job-002", name: "YouTube Script - Tech Review", module: "YouTube Factory", status: "running", progress: 65, started: "10:45 AM", duration: "—" },
+    { id: "job-003", name: "Social Media Batch", module: "Social Factory", status: "queued", progress: 0, started: "—", duration: "—" },
+    { id: "job-004", name: "Code Review Assistant", module: "Developer Assistant", status: "failed", progress: 0, started: "Yesterday", duration: "1m 12s" },
+    { id: "job-005", name: "Knowledge Base Sync", module: "Knowledge Base", status: "pending", progress: 0, started: "—", duration: "—" },
+  ];
 
-  const dbState: "healthy" | "unhealthy" | "unknown" = readiness.isPending
-    ? "unknown"
-    : readiness.isError
-      ? "unhealthy"
-      : readiness.data?.checks?.database === "ok"
-        ? "healthy"
-        : "unhealthy";
+  const quickActions = [
+    { label: "Generate Stock Content", href: "/dashboard/stock-factory", icon: FactoryIcon, description: "Create financial content", variant: "primary" },
+    { label: "Create YouTube Script", href: "/dashboard/youtube-factory", icon: YoutubeIcon, description: "Video content creation", variant: "secondary" },
+    { label: "Social Media Posts", href: "/dashboard/social-factory", icon: Share2Icon, description: "Multi-platform content", variant: "secondary" },
+    { label: "New Automation", href: "/dashboard/business-automation", icon: ZapIcon, description: "Build workflow", variant: "outline" },
+    { label: "Code Assistant", href: "/dashboard/developer-assistant", icon: CodeIcon, description: "AI pair programming", variant: "outline" },
+    { label: "Add Documents", href: "/dashboard/knowledge-base", icon: BookOpenIcon, description: "Knowledge management", variant: "outline" },
+  ];
 
-  const ollamaState = (() => {
-    if (providerStatus.isPending) return "unknown" as const;
-    const status = providerStatus.data?.ollama;
-    if (!status) return "unknown" as const;
-    return status.healthy ? ("healthy" as const) : ("unhealthy" as const);
-  })();
-
-  const freellmState = (() => {
-    if (providerStatus.isPending) return "unknown" as const;
-    const status = providerStatus.data?.freellmapi;
-    if (!status) return "unknown" as const;
-    return status.healthy ? ("healthy" as const) : ("unhealthy" as const);
-  })();
+  const modules = [
+    { name: "Stock Factory", icon: FactoryIcon, description: "Automated stock market content generation", status: "beta", href: "/dashboard/stock-factory" },
+    { name: "YouTube Factory", icon: YoutubeIcon, description: "Script, title, and description generation", status: "alpha", href: "/dashboard/youtube-factory" },
+    { name: "Social Factory", icon: Share2Icon, description: "Multi-platform social media content", status: "coming_soon", href: "/dashboard/social-factory" },
+    { name: "Business Automation", icon: ZapIcon, description: "Workflow automation and scheduling", status: "coming_soon", href: "/dashboard/business-automation" },
+    { name: "Developer Assistant", icon: CodeIcon, description: "Code generation and review assistance", status: "alpha", href: "/dashboard/developer-assistant" },
+    { name: "Knowledge Base", icon: BookOpenIcon, description: "Document storage and RAG queries", status: "beta", href: "/dashboard/knowledge-base" },
+    { name: "Task Queue", icon: ListTodoIcon, description: "Job management and monitoring", status: "enabled", href: "/dashboard/task-queue" },
+    { name: "Activity Logs", icon: ActivityIcon, description: "System activity and audit trail", status: "enabled", href: "/dashboard/activity-logs" },
+    { name: "Settings", icon: SettingsIcon, description: "Application configuration", status: "enabled", href: "/dashboard/settings" },
+  ];
 
   return (
     <div className="space-y-6">
       <PageHeader
         title="Overview"
-        description="Live system status from your local backend"
+        description="Monitor your AI automations and system status at a glance"
         breadcrumbs={[{ label: "Dashboard", href: "/dashboard/overview" }]}
         actions={
           <div className="flex items-center gap-2">
-            <span className="flex items-center gap-2 text-sm text-muted-foreground" aria-live="polite">
-              <StatusDot state={healthState} />
-              Backend {health.isPending ? "checking…" : backendOnline ? "online" : "offline"}
-            </span>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                health.refetch();
-                readiness.refetch();
-                providerStatus.refetch();
-                models.refetch();
-                jobs.refetch();
-                activity.refetch();
-              }}
-            >
+            <Button variant="outline" size="sm">
               <RefreshCwIcon className="h-4 w-4 mr-2" />
-              Refresh all
+              Refresh
+            </Button>
+            <Button>
+              <PlusIcon className="h-4 w-4 mr-2" />
+              New Automation
             </Button>
           </div>
         }
       />
 
-      {/* System status cards */}
-      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-        {health.isPending || readiness.isPending || providerStatus.isPending ? (
-          <>
-            <StatusCardSkeleton />
-            <StatusCardSkeleton />
-            <StatusCardSkeleton />
-            <StatusCardSkeleton />
-          </>
-        ) : (
-          <>
-            <Card className="min-h-[120px]">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Backend API</CardTitle>
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary" aria-hidden="true">
-                  <CpuIcon className="h-5 w-5" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2">
-                  <StatusDot state={healthState} />
-                  <span className="text-2xl font-bold capitalize">{healthState}</span>
-                </div>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  {health.data?.service ?? "local-ai-studio-api"}
-                </p>
-              </CardContent>
-            </Card>
+      <SectionHeading title="Automation Overview" />
+      <StatCardGrid cards={stats} />
 
-            <Card className="min-h-[120px]">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Database</CardTitle>
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10 text-primary" aria-hidden="true">
-                  <DatabaseIcon className="h-5 w-5" />
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <CpuIcon className="h-5 w-5 text-primary" />
+                AI Provider Status
+              </CardTitle>
+              <Button variant="ghost" size="sm">
+                <RefreshCwIcon className="h-4 w-4 mr-1" />
+                Check
+              </Button>
+            </div>
+            <CardDescription>Monitor your AI inference providers</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="space-y-4">
+              {aiProviders.map((provider) => (
+                <div key={provider.name} className="flex items-center justify-between p-3 rounded-lg border bg-card">
+                  <div className="flex items-center gap-3">
+                    <div className={cn(
+                      "flex h-10 w-10 items-center justify-center rounded-lg",
+                      provider.type === "local" ? "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400" : "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+                    )}>
+                      {provider.type === "local" ? <DatabaseIcon className="h-5 w-5" /> : <GlobeIcon className="h-5 w-5" />}
+                    </div>
+                    <div>
+                      <p className="font-medium">{provider.name}</p>
+                      <p className="text-sm text-muted-foreground">{provider.model}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <StatusBadge status={provider.status} variant="default" size="md" />
+                    {provider.latency !== "—" && (
+                      <span className="text-sm text-muted-foreground">{provider.latency}</span>
+                    )}
+                  </div>
                 </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2">
-                  <StatusDot state={dbState} />
-                  <span className="text-2xl font-bold capitalize">{dbState}</span>
-                </div>
-                <p className="mt-2 text-xs text-muted-foreground">SQLite (local)</p>
-              </CardContent>
-            </Card>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
 
-            <Card className="min-h-[120px]">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Ollama</CardTitle>
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400" aria-hidden="true">
-                  <CpuIcon className="h-5 w-5" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2">
-                  <StatusDot state={ollamaState} />
-                  <span className="text-2xl font-bold capitalize">{ollamaState}</span>
-                </div>
-                <p className="mt-2 text-xs text-muted-foreground">Local inference</p>
-              </CardContent>
-            </Card>
-
-            <Card className="min-h-[120px]">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">FreeLLMAPI</CardTitle>
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" aria-hidden="true">
-                  <GlobeIcon className="h-5 w-5" />
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex items-center gap-2">
-                  <StatusDot state={freellmState} />
-                  <span className="text-2xl font-bold capitalize">{freellmState}</span>
-                </div>
-                <p className="mt-2 text-xs text-muted-foreground">Cloud fallback</p>
-              </CardContent>
-            </Card>
-          </>
-        )}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <SparklesIcon className="h-5 w-5 text-primary" />
+              Quick Actions
+            </CardTitle>
+            <CardDescription>Start a new automation task</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="grid gap-3 sm:grid-cols-2">
+              {quickActions.map((action) => (
+                <a
+                  key={action.label}
+                  href={action.href}
+                  className={cn(
+                    "flex items-center gap-3 p-3 rounded-lg border transition-all hover:border-primary/50 hover:bg-accent/50",
+                    action.variant === "primary" && "border-primary/30 bg-primary/5"
+                  )}
+                >
+                  <div className={cn(
+                    "flex h-10 w-10 items-center justify-center rounded-lg",
+                    action.variant === "primary" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"
+                  )}>
+                    {createElement(action.icon, { className: "h-5 w-5" })}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{action.label}</p>
+                    <p className="text-xs text-muted-foreground truncate">{action.description}</p>
+                  </div>
+                  <ArrowRightIcon className="h-4 w-4 text-muted-foreground" />
+                </a>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Provider test */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <SparklesIcon className="h-5 w-5 text-primary" />
-            Connection Tests
-          </CardTitle>
-          <CardDescription>Run real connection tests against configured providers</CardDescription>
-        </CardHeader>
-        <CardContent className="pt-0">
-          <div className="flex flex-wrap items-center gap-2">
-            <Button variant="outline" size="sm" onClick={() => handleTestProvider("ollama")} disabled={testProvider.isPending}>
-              Test Ollama
-            </Button>
-            <Button variant="outline" size="sm" onClick={() => handleTestProvider("freellmapi")} disabled={testProvider.isPending}>
-              Test FreeLLMAPI
-            </Button>
-            {testResult && (
-              <p
-                className={cn(
-                  "text-sm",
-                  testResult.includes("failed") ? "text-destructive" : "text-green-600 dark:text-green-400"
-                )}
-                role="status"
-                aria-live="polite"
-              >
-                {testResult}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <ActivityIcon className="h-5 w-5 text-primary" />
+                Recent Activity
+              </CardTitle>
+              <Button variant="ghost" size="sm" asChild>
+                <a href="/dashboard/activity-logs">
+                  <ExternalLinkIcon className="h-4 w-4 mr-1" />
+                  View All
+                </a>
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="space-y-3">
+              {recentActivity.map((activity) => (
+                <div key={activity.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-accent/50 transition-colors">
+                  <div className={cn(
+                    "flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center",
+                    activity.type === "success" && "bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400",
+                    activity.type === "warning" && "bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400",
+                    activity.type === "info" && "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400"
+                  )}>
+                    {activity.type === "success" && <CheckIcon className="h-4 w-4" />}
+                    {activity.type === "warning" && <ClockIcon className="h-4 w-4" />}
+                    {activity.type === "info" && <FileTextIcon className="h-4 w-4" />}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium">{activity.action}</p>
+                    <p className="text-sm text-muted-foreground truncate">{activity.detail}</p>
+                  </div>
+                  <span className="text-xs text-muted-foreground whitespace-nowrap">{activity.time}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="flex items-center gap-2">
+                <ListTodoIcon className="h-5 w-5 text-primary" />
+                Recent Jobs
+              </CardTitle>
+              <Button variant="ghost" size="sm" asChild>
+                <a href="/dashboard/task-queue">
+                  <ExternalLinkIcon className="h-4 w-4 mr-1" />
+                  View Queue
+                </a>
+              </Button>
+            </div>
+          </CardHeader>
+          <CardContent className="pt-0">
+            <div className="space-y-3">
+              {recentJobs.map((job) => (
+                <div key={job.id} className="flex items-center gap-3 p-3 rounded-lg hover:bg-accent/50 transition-colors">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium truncate">{job.name}</p>
+                    <p className="text-xs text-muted-foreground">{job.module}</p>
+                  </div>
+                  <StatusBadge status={job.status} variant="subtle" size="sm" />
+                  <div className="text-right w-24 text-xs text-muted-foreground hidden sm:block">
+                    <p>{job.started}</p>
+                    <p>{job.duration}</p>
+                  </div>
+                  {job.progress > 0 && job.progress < 100 && (
+                    <div className="w-24 h-1.5 bg-muted rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-primary rounded-full transition-all duration-300"
+                        style={{ width: `${job.progress}%` }}
+                      />
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <SectionHeading
+        title="Automation Modules"
+        description="Available modules for your AI workflows"
+        action={
+          <Button variant="ghost" size="sm" asChild>
+            <a href="/dashboard/settings">
+              Manage Modules
+              <ArrowRightIcon className="h-4 w-4 ml-1" />
+            </a>
+          </Button>
+        }
+      />
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {modules.map((module) => (
+          <a
+            key={module.name}
+            href={module.href}
+            className="group flex items-start gap-4 p-4 rounded-lg border bg-card hover:border-primary/50 hover:shadow-md transition-all"
+          >
+            <div className={cn(
+              "flex-shrink-0 h-12 w-12 rounded-lg flex items-center justify-center",
+              module.status === "enabled" || module.status === "beta" ? "bg-primary/10 text-primary" :
+              module.status === "alpha" ? "bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400" :
+              module.status === "coming_soon" ? "bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" :
+              "bg-muted text-muted-foreground"
+            )}>
+              {createElement(module.icon, { className: "h-6 w-6" })}
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <h3 className="font-medium truncate group-hover:text-primary transition-colors">{module.name}</h3>
+                <StatusBadge status={module.status} variant="outline" size="sm" />
+              </div>
+              <p className="mt-1 text-sm text-muted-foreground line-clamp-2">{module.description}</p>
+            </div>
+            <ArrowRightIcon className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+          </a>
+        ))}
+      </div>
+
+      <Card className="border-primary/20 bg-primary/5">
+        <CardContent className="pt-6">
+          <div className="flex items-start gap-4">
+            <SparklesIcon className="h-6 w-6 text-primary mt-0.5" />
+            <div className="flex-1">
+              <h3 className="font-medium text-primary">Modules Under Development</h3>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Stock Factory, YouTube Factory, Social Factory, Business Automation, and Developer Assistant
+                are currently in development. The navigation items are placeholders for future functionality.
+                Task Queue, Activity Logs, and Settings are available but have limited features in this preview.
               </p>
-            )}
+            </div>
           </div>
         </CardContent>
       </Card>
-
-      {/* Models */}
-      {models.isPending ? (
-        <ModelsCardSkeleton />
-      ) : models.isError ? (
-        <ErrorPanel error={models.error} onRetry={() => models.refetch()} label="installed models" />
-      ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>Installed Models</CardTitle>
-            <CardDescription>Models available per provider (live from backend)</CardDescription>
-          </CardHeader>
-          <CardContent className="pt-0">
-            {Object.entries(models.data ?? {}).every(([, list]) => list.length === 0) ? (
-              <div className="py-8 text-center text-sm text-muted-foreground">
-                No models reported. Is Ollama running with a model installed?
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {Object.entries(models.data ?? {}).map(([provider, list]) =>
-                  list.length > 0 ? (
-                    <div key={provider}>
-                      <p className="mb-2 text-sm font-medium capitalize">{provider}</p>
-                      <div className="flex flex-wrap gap-2">
-                        {list.map((model) => (
-                          <span
-                            key={model}
-                            className="rounded-full border border-border bg-muted px-2 py-1 text-xs text-muted-foreground"
-                          >
-                            {model}
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  ) : null
-                )}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Jobs and activity */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        {jobs.isPending ? (
-          <ListCardSkeleton rows={4} />
-        ) : jobs.isError ? (
-          <div>
-            <ErrorPanel error={jobs.error} onRetry={() => jobs.refetch()} label="recent jobs" />
-          </div>
-        ) : (
-          <Card className="min-h-[280px]">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <ListTodoIcon className="h-5 w-5 text-primary" />
-                  Recent Jobs
-                </CardTitle>
-                <Button variant="ghost" size="sm" asChild>
-                  <a href="/dashboard/task-queue">
-                    <ExternalLinkIcon className="h-4 w-4 mr-1" />
-                    View Queue
-                  </a>
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              {jobs.data?.jobs?.length === 0 ? (
-                <div className="py-8 text-center text-sm text-muted-foreground">
-                  No jobs yet. Jobs you submit will appear here.
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {(jobs.data?.jobs ?? []).map((job) => (
-                    <div key={job.id} className="flex items-center gap-3 rounded-lg border p-3">
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate font-medium">{job.job_type}</p>
-                        <p className="text-xs text-muted-foreground">
-                          {job.module_id ?? "—"} · {new Date(job.created_at).toLocaleString()}
-                        </p>
-                      </div>
-                      <StatusBadge status={job.status.toLowerCase()} variant="subtle" size="sm" />
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-
-        {activity.isPending ? (
-          <ListCardSkeleton rows={4} />
-        ) : activity.isError ? (
-          <div>
-            <ErrorPanel error={activity.error} onRetry={() => activity.refetch()} label="activity logs" />
-          </div>
-        ) : (
-          <Card className="min-h-[280px]">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle className="flex items-center gap-2">
-                  <ActivityIcon className="h-5 w-5 text-primary" />
-                  Recent Activity
-                </CardTitle>
-                <Button variant="ghost" size="sm" asChild>
-                  <a href="/dashboard/activity-logs">
-                    <ExternalLinkIcon className="h-4 w-4 mr-1" />
-                    View All
-                  </a>
-                </Button>
-              </div>
-            </CardHeader>
-            <CardContent className="pt-0">
-              {activity.data?.logs?.length === 0 ? (
-                <div className="py-8 text-center text-sm text-muted-foreground">
-                  No activity recorded yet.
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {(activity.data?.logs ?? []).map((log) => (
-                    <div key={log.id} className="flex items-start gap-3 rounded-lg border p-3">
-                      <StatusDot
-                        state={
-                          log.severity === "error"
-                            ? "unhealthy"
-                            : log.severity === "warning"
-                              ? "unknown"
-                              : "healthy"
-                        }
-                      />
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate font-medium">{log.title}</p>
-                        <p className="truncate text-xs text-muted-foreground">{log.message}</p>
-                      </div>
-                      <span className="whitespace-nowrap text-xs text-muted-foreground">
-                        {new Date(log.created_at).toLocaleTimeString()}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        )}
-      </div>
     </div>
   );
 }
