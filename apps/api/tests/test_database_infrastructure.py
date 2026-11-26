@@ -1,26 +1,26 @@
 """Tests for database infrastructure layer."""
-import pytest
-import pytest_asyncio
 from datetime import datetime, timedelta
 from uuid import uuid4
-from sqlalchemy.ext.asyncio import AsyncSession
+
+import pytest
+import pytest_asyncio
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.core.database.models.infrastructure import (
-    JobStatus,
-    JobPriority,
-    AppSettings,
     AIProvider,
     AIProviderModel,
+    AppSettings,
     AutomationJob,
-    ActivityLog,
+    JobPriority,
+    JobStatus,
 )
 from src.core.database.repositories.infrastructure import (
-    AppSettingsRepository,
-    AIProviderRepository,
-    AIProviderModelRepository,
-    AutomationJobRepository,
     ActivityLogRepository,
+    AIProviderModelRepository,
+    AIProviderRepository,
+    AppSettingsRepository,
+    AutomationJobRepository,
 )
 
 
@@ -95,7 +95,7 @@ class TestAppSettings:
             value_type="string",
         )
         # Duplicate should fail
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match="unique constraint|UNIQUE constraint"):
             await repo.create(
                 id=str(uuid4()),
                 category="test",
@@ -492,7 +492,6 @@ class TestModelRelationships:
     """Tests for model relationships and constraints."""
 
     async def test_ai_provider_model_cascade_delete(self, test_session: AsyncSession):
-        from src.core.database.models.infrastructure import AIProvider, AIProviderModel
 
         provider = AIProvider(
             id=str(uuid4()),
@@ -523,7 +522,7 @@ class TestModelRelationships:
         assert result.scalar_one_or_none() is None
 
     async def test_job_progress_constraint(self, test_session: AsyncSession):
-        from src.core.database.models.infrastructure import AutomationJob, JobStatus, JobPriority
+        from src.core.database.models.infrastructure import JobPriority, JobStatus
 
         job = AutomationJob(
             id=str(uuid4()),
@@ -534,11 +533,10 @@ class TestModelRelationships:
             progress=1.5,  # Invalid - > 1.0
         )
         test_session.add(job)
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match="ck_automation_jobs_progress"):
             await test_session.commit()
 
     async def test_settings_value_type_constraint(self, test_session: AsyncSession):
-        from src.core.database.models.infrastructure import AppSettings
 
         setting = AppSettings(
             id=str(uuid4()),
@@ -548,11 +546,10 @@ class TestModelRelationships:
             value_type="invalid_type",  # Should fail
         )
         test_session.add(setting)
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match="ck_app_settings_value_type"):
             await test_session.commit()
 
     async def test_unique_provider_model(self, test_session: AsyncSession):
-        from src.core.database.models.infrastructure import AIProvider, AIProviderModel
 
         provider = AIProvider(
             id=str(uuid4()),
@@ -580,9 +577,8 @@ class TestModelRelationships:
             is_enabled=True,
         )
         test_session.add(model2)
-        with pytest.raises(Exception):
+        with pytest.raises(Exception, match="unique constraint|UNIQUE constraint"):
             await test_session.commit()
 
 
 # Import timedelta
-from datetime import timedelta

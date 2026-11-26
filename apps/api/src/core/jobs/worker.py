@@ -1,9 +1,10 @@
 """Sequential job worker."""
 import asyncio
 import logging
-from typing import Callable, Awaitable
-from src.core.jobs.queue import JobQueue
+from collections.abc import Awaitable, Callable
+
 from src.core.jobs.models import Job
+from src.core.jobs.queue import JobQueue
 
 logger = logging.getLogger(__name__)
 

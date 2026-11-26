@@ -1,15 +1,14 @@
 """AI Gateway schemas and enums."""
-from enum import Enum
 from dataclasses import dataclass, field
-from typing import Optional
+from enum import StrEnum
 
 
-class ProviderName(str, Enum):
+class ProviderName(StrEnum):
     OLLAMA = "ollama"
     FREELLM = "freellmapi"
 
 
-class ModelCapability(str, Enum):
+class ModelCapability(StrEnum):
     CHAT = "chat"
     COMPLETION = "completion"
     EMBEDDING = "embedding"

@@ -1,5 +1,5 @@
 """Job processing package."""
-from src.core.jobs.models import Job, JobStatus, JobPriority
+from src.core.jobs.models import Job, JobPriority, JobStatus
 from src.core.jobs.queue import JobQueue
 from src.core.jobs.worker import job_worker
 

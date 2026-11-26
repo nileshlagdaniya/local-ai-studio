@@ -39,12 +39,12 @@ local-ai-studio/
 
 ### Tech Stack
 
-| Layer | Technology |
-|-------|------------|
+| Layer        | Technology                                                                            |
+| ------------ | ------------------------------------------------------------------------------------- |
 | **Frontend** | Next.js 15, React 19, TypeScript, Tailwind CSS v4, shadcn/ui, TanStack Query, Zustand |
-| **Backend** | FastAPI, Pydantic v2, SQLAlchemy 2.x, Alembic, SQLite/PostgreSQL |
-| **AI** | Ollama (local), FreeLLMAPI (cloud fallback) |
-| **Dev** | pnpm, uv, ESLint, Prettier, Ruff, Vitest, Pytest |
+| **Backend**  | FastAPI, Pydantic v2, SQLAlchemy 2.x, Alembic, SQLite/PostgreSQL                      |
+| **AI**       | Ollama (local), FreeLLMAPI (cloud fallback)                                           |
+| **Dev**      | pnpm, uv, ESLint, Prettier, Ruff, Vitest, Pytest                                      |
 
 ## Quick Start
 
@@ -90,7 +90,7 @@ ollama pull qwen2.5-coder:7b
 pnpm dev:all
 
 # Or individually:
-pnpm dev          # Frontend only (http://localhost:3000)
+pnpm dev          # Frontend only (http://localhost:3003)
 pnpm dev:api      # Backend only (http://localhost:8000)
 ```
 
@@ -177,10 +177,10 @@ apps/api/
 
 ### Environment Variables
 
-| File | Purpose |
-|------|---------|
-| `.env` | Root/frontend config |
-| `apps/api/.env` | Backend config |
+| File            | Purpose              |
+| --------------- | -------------------- |
+| `.env`          | Root/frontend config |
+| `apps/api/.env` | Backend config       |
 
 Key backend settings:
 

@@ -1,8 +1,9 @@
 """Abstract base class for AI providers."""
 from abc import ABC, abstractmethod
+from collections.abc import AsyncGenerator
 from dataclasses import dataclass, field
-from typing import AsyncGenerator, Optional
-from src.core.ai_gateway.schemas import ProviderName, ModelCapability
+
+from src.core.ai_gateway.schemas import ModelCapability, ProviderName
 
 
 @dataclass
@@ -22,7 +23,7 @@ class GenerationRequest:
     prompt: str
     model: str
     provider: ProviderName = ProviderName.OLLAMA
-    system_prompt: Optional[str] = None
+    system_prompt: str | None = None
     temperature: float = 0.7
     max_tokens: int = 4096
     top_p: float = 0.9
@@ -58,7 +59,7 @@ class GenerationResponse:
 class StreamChunk:
     content: str
     done: bool = False
-    usage: Optional[TokenUsage] = None
+    usage: TokenUsage | None = None
 
 
 class AIProvider(ABC):
@@ -98,6 +99,6 @@ class AIProvider(ABC):
     async def pull_model(self, model: str) -> bool:
         return False
 
-    async def get_model_info(self, model: str) -> Optional[ModelInfo]:
+    async def get_model_info(self, model: str) -> ModelInfo | None:
         models = await self.list_models()
         return next((m for m in models if m.id == model), None)

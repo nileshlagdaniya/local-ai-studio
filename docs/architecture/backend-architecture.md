@@ -250,7 +250,7 @@ class Settings(BaseSettings):
     max_concurrent_jobs: int = 1  # 8 GB RAM constraint
 
     # CORS
-    cors_origins: list[str] = ["http://localhost:3000"]
+    cors_origins: list[str] = ["http://localhost:3003"]
 
     @property
     def cors_config(self) -> dict:
@@ -1281,16 +1281,16 @@ uv run alembic upgrade head
 
 ## Environment Variables
 
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `APP_NAME` | Application name | `Local AI Studio` |
-| `DEBUG` | Debug mode | `false` |
-| `API_HOST` | Bind address | `0.0.0.0` |
-| `API_PORT` | Port | `8000` |
-| `DATABASE_URL` | SQLite async URL | `sqlite+aiosqlite:///./data/local_ai_studio.db` |
-| `OLLAMA_BASE_URL` | Ollama API URL | `http://localhost:11434` |
-| `FREELLM_API_KEY` | FreeLLMAPI key | *(from env)* |
-| `FREELLM_BASE_URL` | FreeLLMAPI URL | `https://api.freellmapi.xyz` |
-| `STORAGE_ROOT` | File storage root | `./data/storage` |
-| `MAX_FILE_SIZE` | Max upload size (bytes) | `104857600` |
-| `CORS_ORIGINS` | Allowed origins | `http://localhost:3000` |
+| Variable           | Description             | Default                                         |
+| ------------------ | ----------------------- | ----------------------------------------------- |
+| `APP_NAME`         | Application name        | `Local AI Studio`                               |
+| `DEBUG`            | Debug mode              | `false`                                         |
+| `API_HOST`         | Bind address            | `0.0.0.0`                                       |
+| `API_PORT`         | Port                    | `8000`                                          |
+| `DATABASE_URL`     | SQLite async URL        | `sqlite+aiosqlite:///./data/local_ai_studio.db` |
+| `OLLAMA_BASE_URL`  | Ollama API URL          | `http://localhost:11434`                        |
+| `FREELLM_API_KEY`  | FreeLLMAPI key          | _(from env)_                                    |
+| `FREELLM_BASE_URL` | FreeLLMAPI URL          | `https://api.freellmapi.xyz`                    |
+| `STORAGE_ROOT`     | File storage root       | `./data/storage`                                |
+| `MAX_FILE_SIZE`    | Max upload size (bytes) | `104857600`                                     |
+| `CORS_ORIGINS`     | Allowed origins         | `http://localhost:3003`                         |

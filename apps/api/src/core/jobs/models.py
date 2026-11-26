@@ -1,12 +1,11 @@
 """Job models for background processing."""
-from enum import Enum as PyEnum
+import uuid
 from dataclasses import dataclass, field
 from datetime import datetime
-from typing import Any, Optional
-import uuid
+from enum import StrEnum
 
 
-class JobStatus(str, PyEnum):
+class JobStatus(StrEnum):
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
@@ -14,7 +13,7 @@ class JobStatus(str, PyEnum):
     CANCELLED = "cancelled"
 
 
-class JobPriority(int, PyEnum):
+class JobPriority(int, StrEnum):
     LOW = 0
     NORMAL = 50
     HIGH = 100
@@ -28,10 +27,10 @@ class Job:
     status: JobStatus = JobStatus.PENDING
     priority: JobPriority = JobPriority.NORMAL
     progress: float = 0.0
-    result: Optional[dict] = None
-    error: Optional[str] = None
+    result: dict | None = None
+    error: str | None = None
     created_at: datetime = field(default_factory=datetime.utcnow)
-    started_at: Optional[datetime] = None
-    completed_at: Optional[datetime] = None
-    module_id: Optional[str] = None
-    user_id: Optional[str] = None
+    started_at: datetime | None = None
+    completed_at: datetime | None = None
+    module_id: str | None = None
+    user_id: str | None = None

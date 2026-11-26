@@ -1,13 +1,10 @@
 """Shared Pydantic schemas."""
-from typing import Generic, TypeVar
-from pydantic import BaseModel, Field
 from typing import Any
 
+from pydantic import BaseModel
 
-DataT = TypeVar("DataT")
 
-
-class PaginatedResponse(BaseModel, Generic[DataT]):
+class PaginatedResponse[DataT](BaseModel):
     items: list[DataT]
     total: int
     page: int

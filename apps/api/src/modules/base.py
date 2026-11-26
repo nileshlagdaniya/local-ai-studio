@@ -1,8 +1,9 @@
 """Base module class."""
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any
+
 from fastapi import APIRouter
+
 from src.core.jobs.queue import JobQueue
 
 
