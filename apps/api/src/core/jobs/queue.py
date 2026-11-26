@@ -2,9 +2,9 @@
 import asyncio
 import heapq
 from dataclasses import dataclass, field
-from typing import Optional
 from datetime import datetime
-from src.core.jobs.models import Job, JobPriority, JobStatus
+
+from src.core.jobs.models import Job, JobStatus
 
 
 @dataclass(order=True)
@@ -36,7 +36,7 @@ class JobQueue:
             self._not_empty.notify()
         return job.id
 
-    async def dequeue(self) -> Optional[Job]:
+    async def dequeue(self) -> Job | None:
         async with self._lock:
             while not self._queue:
                 await self._not_empty.wait()
@@ -88,7 +88,7 @@ class JobQueue:
                     return True
             return False
 
-    async def get_job(self, job_id: str) -> Optional[Job]:
+    async def get_job(self, job_id: str) -> Job | None:
         async with self._lock:
             if job_id in self._running:
                 return self._running[job_id]

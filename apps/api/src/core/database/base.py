@@ -1,14 +1,13 @@
 """Database base classes and utilities."""
 from datetime import datetime
-from uuid import uuid4
-from sqlalchemy import DateTime, func, String, Text
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy.dialects.sqlite import JSON as SQLiteJSON
-from sqlalchemy.dialects.postgresql import JSONB as PGJSONB
-from sqlalchemy import Dialect
-from sqlalchemy.ext.compiler import compiles
-from sqlalchemy.types import TypeDecorator
 from typing import Any
+from uuid import uuid4
+
+from sqlalchemy import DateTime, Dialect, String, Text, func
+from sqlalchemy.dialects.postgresql import JSONB as PGJSONB
+from sqlalchemy.dialects.sqlite import JSON
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.types import TypeDecorator
 
 
 class Base(DeclarativeBase):
@@ -45,7 +44,7 @@ class JSONType(TypeDecorator):
     def load_dialect_impl(self, dialect: Dialect):
         if dialect.name == "postgresql":
             return dialect.type_descriptor(PGJSONB())
-        return dialect.type_descriptor(SQLiteJSON())
+        return dialect.type_descriptor(JSON())
 
     def process_bind_param(self, value, dialect):
         if value is None:
@@ -60,5 +59,8 @@ class JSONType(TypeDecorator):
         return json.loads(value)
 
 
-def JSONColumn() -> Any:
+def json_column() -> Any:
     return JSONType()
+
+
+JSONColumn = json_column  # Backwards compatibility alias

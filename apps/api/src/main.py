@@ -1,16 +1,18 @@
 """FastAPI application factory."""
 from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from src.config.settings import get_settings
+from src.api.middleware import ErrorHandlingMiddleware, LoggingMiddleware
+from src.api.routes import ai, files, health, jobs, modules
+from src.api.routes import settings as settings_routes
 from src.config.logging import setup_logging
-from src.api.middleware import LoggingMiddleware, ErrorHandlingMiddleware
-from src.api.routes import health, modules, ai, jobs, files, settings as settings_routes
-from src.core.database.session import init_db, close_db
+from src.config.settings import get_settings
+from src.core.ai_gateway.facade import ai_gateway
+from src.core.database.session import close_db, init_db
 from src.core.jobs.worker import job_worker
 from src.modules.registry import module_registry
-from src.core.ai_gateway.facade import ai_gateway
 
 
 @asynccontextmanager

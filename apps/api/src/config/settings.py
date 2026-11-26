@@ -1,9 +1,8 @@
 """Application settings using Pydantic Settings."""
 from functools import lru_cache
 from pathlib import Path
-from typing import Annotated
 
-from pydantic import Field, field_validator
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -30,7 +29,7 @@ class Settings(BaseSettings):
     database_max_overflow: int = 20
 
     # CORS
-    cors_origins: list[str] = ["http://localhost:3000"]
+    cors_origins: list[str] = ["http://localhost:3003"]
 
     @property
     def cors_config(self) -> dict:

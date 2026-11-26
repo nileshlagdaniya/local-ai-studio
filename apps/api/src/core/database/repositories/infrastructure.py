@@ -1,22 +1,20 @@
 """Repository layer for infrastructure tables."""
-from datetime import datetime
-from typing import Any
 from collections.abc import Sequence
+from datetime import datetime
 from uuid import uuid4
 
-from sqlalchemy import select, func, desc, asc, delete, update
+from sqlalchemy import asc, desc, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from src.core.database.repositories.base import BaseRepository
 from src.core.database.models.infrastructure import (
-    JobStatus,
-    JobPriority,
-    AppSettings,
+    ActivityLog,
     AIProvider,
     AIProviderModel,
+    AppSettings,
     AutomationJob,
-    ActivityLog,
+    JobStatus,
 )
+from src.core.database.repositories.base import BaseRepository
 
 
 class AppSettingsRepository(BaseRepository[AppSettings]):
@@ -65,12 +63,12 @@ class AIProviderRepository(BaseRepository[AIProvider]):
         super().__init__(session, AIProvider)
 
     async def get_enabled(self) -> Sequence[AIProvider]:
-        stmt = select(AIProvider).where(AIProvider.is_enabled == True).order_by(AIProvider.priority)
+        stmt = select(AIProvider).where(AIProvider.is_enabled).order_by(AIProvider.priority)
         result = await self.session.execute(stmt)
         return result.scalars().all()
 
     async def get_default(self) -> AIProvider | None:
-        stmt = select(AIProvider).where(AIProvider.is_default == True, AIProvider.is_enabled == True)
+        stmt = select(AIProvider).where(AIProvider.is_default, AIProvider.is_enabled)
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()
 
@@ -101,7 +99,7 @@ class AIProviderModelRepository(BaseRepository[AIProviderModel]):
     async def get_by_provider(self, provider_id: str, enabled_only: bool = False) -> Sequence[AIProviderModel]:
         stmt = select(AIProviderModel).where(AIProviderModel.provider_id == provider_id)
         if enabled_only:
-            stmt = stmt.where(AIProviderModel.is_enabled == True)
+            stmt = stmt.where(AIProviderModel.is_enabled)
         stmt = stmt.order_by(AIProviderModel.is_default.desc(), AIProviderModel.model_id)
         result = await self.session.execute(stmt)
         return result.scalars().all()
@@ -109,8 +107,8 @@ class AIProviderModelRepository(BaseRepository[AIProviderModel]):
     async def get_default_model(self, provider_id: str) -> AIProviderModel | None:
         stmt = select(AIProviderModel).where(
             AIProviderModel.provider_id == provider_id,
-            AIProviderModel.is_default == True,
-            AIProviderModel.is_enabled == True,
+            AIProviderModel.is_default,
+            AIProviderModel.is_enabled,
         )
         result = await self.session.execute(stmt)
         return result.scalar_one_or_none()

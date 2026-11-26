@@ -1,11 +1,10 @@
 """Base repository class for database operations."""
-from typing import Any
 from collections.abc import Sequence
-from uuid import UUID, uuid4
+from typing import Any
+from uuid import UUID
 
-from sqlalchemy import select, update, delete, func
+from sqlalchemy import asc, delete, desc, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import DeclarativeBase
 
 from src.core.database.base import Base
 

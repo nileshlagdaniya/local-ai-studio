@@ -1,5 +1,4 @@
 """Custom exceptions."""
-from typing import Any
 
 
 class APIError(Exception):

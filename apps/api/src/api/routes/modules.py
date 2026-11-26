@@ -1,5 +1,6 @@
 """Module registry routes."""
 from fastapi import APIRouter
+
 from src.modules.registry import module_registry
 
 router = APIRouter()

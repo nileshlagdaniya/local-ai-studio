@@ -1,8 +1,8 @@
 """Module registry."""
-from typing import Optional
-from src.modules.base import BaseModule, ModuleInfo
-from src.core.jobs.worker import job_worker
+
 from src.core.jobs.queue import JobQueue
+from src.core.jobs.worker import job_worker
+from src.modules.base import BaseModule, ModuleInfo
 
 
 class ModuleRegistry:
@@ -22,7 +22,7 @@ class ModuleRegistry:
                 module.register_job_executors(job_worker)
                 self._modules[module.info.id] = module
 
-    def get_module(self, module_id: str) -> Optional[BaseModule]:
+    def get_module(self, module_id: str) -> BaseModule | None:
         return self._modules.get(module_id)
 
     def list_modules(self) -> list[ModuleInfo]:

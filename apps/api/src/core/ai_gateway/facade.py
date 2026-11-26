@@ -1,10 +1,17 @@
 """AI Gateway Facade - Central entry point for all AI operations."""
-import time
 import logging
-from typing import AsyncGenerator, Optional
+import time
+from collections.abc import AsyncGenerator
+
+from src.core.ai_gateway.base import (
+    AIProvider,
+    GenerationRequest,
+    GenerationResponse,
+    StreamChunk,
+    TokenUsage,
+)
 from src.core.ai_gateway.registry import provider_registry
-from src.core.ai_gateway.schemas import ProviderName, ModelInfo
-from src.core.ai_gateway.base import GenerationRequest, GenerationResponse, StreamChunk
+from src.core.ai_gateway.schemas import ModelInfo, ProviderName
 
 logger = logging.getLogger(__name__)
 
@@ -26,7 +33,7 @@ class AIGateway:
     async def list_models(self) -> dict[ProviderName, list[ModelInfo]]:
         return await provider_registry.get_all_models()
 
-    async def get_model_info(self, model_id: str) -> Optional[ModelInfo]:
+    async def get_model_info(self, model_id: str) -> ModelInfo | None:
         return provider_registry.get_model_info(model_id)
 
     async def pull_model(self, model: str, provider: ProviderName = ProviderName.OLLAMA) -> bool:
@@ -88,20 +95,16 @@ class AIGateway:
         request_type: str,
         start: float,
     ) -> AsyncGenerator[StreamChunk, None]:
-        total_content = ""
         prompt_tokens = 0
         completion_tokens = 0
 
         async for chunk in prov.stream_generate(request):
-            if chunk.content:
-                total_content += chunk.content
             if chunk.usage:
                 prompt_tokens = chunk.usage.prompt_tokens
                 completion_tokens = chunk.usage.completion_tokens
             yield chunk
 
         if user_id:
-            from src.core.ai_gateway.base import TokenUsage
             usage = TokenUsage(
                 prompt_tokens=prompt_tokens,
                 completion_tokens=completion_tokens,
@@ -114,7 +117,7 @@ class AIGateway:
         user_id: str | None,
         provider: ProviderName,
         model: str,
-        usage: "TokenUsage",
+        usage: TokenUsage,
         request_type: str,
     ):
         if not user_id:
@@ -129,8 +132,5 @@ class AIGateway:
             return {provider: await prov.health_check()} if prov else {provider: False}
         return {name: await prov.health_check() for name, prov in provider_registry._providers.items()}
 
-
-# Import here to avoid circular import
-from src.core.ai_gateway.base import AIProvider
 
 ai_gateway = AIGateway()

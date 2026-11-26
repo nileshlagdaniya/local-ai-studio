@@ -1,13 +1,13 @@
 """AI generation routes."""
-from fastapi import APIRouter, HTTPException, Depends
+
+from fastapi import APIRouter, HTTPException
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
-from typing import AsyncGenerator
 
-from src.core.ai_gateway.facade import ai_gateway
-from src.core.ai_gateway.schemas import ProviderName, ModelInfo
-from src.core.ai_gateway.base import GenerationRequest, GenerationResponse, StreamChunk
 from src.config.settings import get_settings
+from src.core.ai_gateway.base import GenerationRequest
+from src.core.ai_gateway.facade import ai_gateway
+from src.core.ai_gateway.schemas import ProviderName
 
 router = APIRouter(prefix="/v1", tags=["ai"])
 
@@ -69,7 +69,6 @@ async def providers_status():
 async def test_provider(provider: ProviderName, request: ProviderTestRequest):
     """Test a specific provider connection."""
     import time
-    from src.core.ai_gateway.base import GenerationRequest
 
     if not await ai_gateway._initialized:
         await ai_gateway.initialize()
@@ -97,7 +96,7 @@ async def test_provider(provider: ProviderName, request: ProviderTestRequest):
 
     start = time.time()
     try:
-        response = await prov.generate(
+        await prov.generate(
             GenerationRequest(
                 prompt=request.test_prompt,
                 model=model,

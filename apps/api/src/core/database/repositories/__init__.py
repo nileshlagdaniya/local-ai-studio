@@ -1,11 +1,11 @@
 """Database repositories package."""
 from src.core.database.repositories.base import BaseRepository
 from src.core.database.repositories.infrastructure import (
-    AppSettingsRepository,
-    AIProviderRepository,
-    AIProviderModelRepository,
-    AutomationJobRepository,
     ActivityLogRepository,
+    AIProviderModelRepository,
+    AIProviderRepository,
+    AppSettingsRepository,
+    AutomationJobRepository,
 )
 
 __all__ = [

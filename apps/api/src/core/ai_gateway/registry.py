@@ -1,11 +1,11 @@
 """Provider registry for AI Gateway."""
 import logging
-from typing import Optional
-from src.core.ai_gateway.base import AIProvider
-from src.core.ai_gateway.ollama import OllamaProvider
-from src.core.ai_gateway.freellmapi import FreeLLMAPIProvider
-from src.core.ai_gateway.schemas import ProviderName, ModelInfo
+
 from src.config.settings import get_settings
+from src.core.ai_gateway.base import AIProvider
+from src.core.ai_gateway.freellmapi import FreeLLMAPIProvider
+from src.core.ai_gateway.ollama import OllamaProvider
+from src.core.ai_gateway.schemas import ModelInfo, ProviderName
 
 logger = logging.getLogger(__name__)
 
@@ -46,7 +46,7 @@ class ProviderRegistry:
         await self._refresh_model_cache()
         self._initialized = True
 
-    def get(self, name: ProviderName) -> Optional[AIProvider]:
+    def get(self, name: ProviderName) -> AIProvider | None:
         return self._providers.get(name)
 
     def list_providers(self) -> list[ProviderName]:
@@ -72,7 +72,7 @@ class ProviderRegistry:
             except Exception:
                 pass
 
-    def get_model_info(self, model_id: str) -> Optional[ModelInfo]:
+    def get_model_info(self, model_id: str) -> ModelInfo | None:
         return self._model_cache.get(model_id)
 
 

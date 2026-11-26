@@ -7,7 +7,6 @@ from pathlib import Path
 import pytest
 import pytest_asyncio
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
-from sqlalchemy.pool import NullPool
 
 # Add src to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -16,13 +15,6 @@ from src.config.settings import Settings
 from src.core.database.base import Base
 
 # Import all models to register them with Base.metadata
-from src.core.database.models import (
-    AppSettings,
-    AIProvider,
-    AIProviderModel,
-    AutomationJob,
-    ActivityLog,
-)
 
 
 @pytest.fixture(scope="session")
@@ -82,7 +74,7 @@ async def test_db_file():
         database_echo=False,
     )
 
-    from src.core.database.session import init_db, close_db
+    from src.core.database.session import close_db, init_db
     await init_db(test_settings)
     yield str(test_db_path)
     await close_db()

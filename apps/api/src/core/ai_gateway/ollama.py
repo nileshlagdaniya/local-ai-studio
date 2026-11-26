@@ -1,9 +1,18 @@
 """Ollama AI provider implementation."""
-import httpx
 import time
-from typing import AsyncGenerator
-from src.core.ai_gateway.base import AIProvider, ModelInfo, GenerationRequest, GenerationResponse, StreamChunk, TokenUsage
-from src.core.ai_gateway.schemas import ProviderName, ModelCapability
+from collections.abc import AsyncGenerator
+
+import httpx
+
+from src.core.ai_gateway.base import (
+    AIProvider,
+    GenerationRequest,
+    GenerationResponse,
+    ModelInfo,
+    StreamChunk,
+    TokenUsage,
+)
+from src.core.ai_gateway.schemas import ModelCapability, ProviderName
 
 
 class OllamaProvider(AIProvider):

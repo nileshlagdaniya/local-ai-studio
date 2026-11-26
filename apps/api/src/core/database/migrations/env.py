@@ -4,17 +4,16 @@ import sys
 from logging.config import fileConfig
 from pathlib import Path
 
+from alembic import context
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from alembic import context
-
 # Add src to path
 sys.path.append(str(Path(__file__).parent.parent.parent.parent))
 
-from src.core.database.base import Base
 from src.config.settings import get_settings
+from src.core.database.base import Base
 
 config = context.config
 
